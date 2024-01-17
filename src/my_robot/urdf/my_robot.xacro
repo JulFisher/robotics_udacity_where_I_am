@@ -120,6 +120,36 @@
 
   </link>
 
+  <link name='camera'>
+    <inertial>
+      <mass value=".1"/>
+      <origin xyz="0.0 0 0" rpy="0 0 0"/>
+      <box_inertia 
+          m=".1" x=".05" y=".05" z=".05"
+      />
+      <inertia
+          ixx="1e-6" ixy="0" ixz="0"
+          iyy="1e-6" iyz="0"
+          izz="1e-6"
+      />
+    </inertial>
+
+    <collision name='camera_collision'>
+      <origin xyz="0 0 0" rpy="0 0 0"/> 
+      <geometry>
+        <box size= ".05 .05 .05"/>
+      </geometry>
+    </collision>
+
+    <visual name='camera_visual'>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <box size= ".05 .05 .05"/>
+      </geometry>
+    </visual>
+
+  </link>
+
   <joint type="continuous" name="left_wheel_hinge">
     <origin xyz="0 0.15 0" rpy="0 0 0"/>
     <child link="left_wheel"/>
@@ -136,6 +166,13 @@
     <axis xyz="0 1 0" rpy="0 0 0"/>
     <limit effort="10000" velocity="1000"/>
     <dynamics damping="1.0" friction="1.0"/>
+  </joint>
+
+  <joint type="fixed" name="camera_joint">
+    <origin xyz=".2 0 0" rpy="0 0 0"/>
+    <child link="camera"/>
+    <parent link="chassis"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
   </joint>
 
 </robot>
