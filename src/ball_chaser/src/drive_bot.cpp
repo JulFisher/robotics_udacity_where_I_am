@@ -38,7 +38,6 @@ int main(int argc, char** argv)
 
     // TODO: Define a drive /ball_chaser/command_robot service with a handle_drive_request callback function -> done
     ros::ServiceServer service = n.advertiseService("/drive_bot/command_robot", handle_drive_request);
-    ROS_INFO("Ready to send drive commands");
 
     // TODO: Delete the loop, move the code to the inside of the callback function and make the necessary changes to publish the requested velocities instead of constant values -> done
 
