@@ -4,14 +4,15 @@
 #include "ball_chaser/DriveToTarget.h"
 // ROS::Publisher motor commands;
 ros::Publisher motor_command_publisher;
+float wheel_seperation = 0.4;
+float wheel_radius = 0.1;
 
 // TODO: Create a handle_drive_request callback function that executes whenever a drive_bot service is requested
 // This function should publish the requested linear x and angular velocities to the robot wheel joints
-// After publishing the requested velocities, a message feedback should be returned with the requested wheel velocities
+// After publishing the requested velocities, a message feedback should be returned with the requested wheel velocities -> done
 bool handle_drive_request(ball_chaser::DriveToTarget::Request& req,
         ball_chaser::DriveToTarget::Response& res)
     {
-        ROS_INFO("DriveToTargetRequest received - linear_x:%1.2f, angular_z:%1.2f", (float)req.linear_x, (float)req.angular_z);
         // Create a motor_command object of type geometry_msgs::Twist
         geometry_msgs::Twist motor_command;
         // Set wheel velocities, forward [0.5, 0.0]
@@ -20,7 +21,9 @@ bool handle_drive_request(ball_chaser::DriveToTarget::Request& req,
         // Publish angles to drive the robot
         motor_command_publisher.publish(motor_command);
         // Return a response message
-        res.msg_feedback = "Wheel velocity right: " + std::to_string(req.linear_x) + " , and left: " + std::to_string(req.angular_z);
+        right_wheel_velo_angular = (req.lienear_x+req.angular_z*wheel_seperation/2.)/wheel_radius;
+        left_wheel_velo_angular = (req.lienear_x-req.angular_z*wheel_seperation/2.)/wheel_radius;
+        res.msg_feedback = "Wheel velocity right: " + std::to_string(right_wheel_velo_angular) + " , rad/s and left: " + std::to_string(left_wheel_velo_angular) + " rad/s.\n";
         ROS_INFO_STREAM(res.msg_feedback);
         return true;
     }
@@ -33,7 +36,7 @@ int main(int argc, char** argv)
     // Create a ROS NodeHandle object
     ros::NodeHandle n;
 
-    // Inform ROS master that we will be publishing a message of type geometry_msgs::Twist on the robot actuation topic with a publishing queue size of 10
+    // Inform ROS master that we will be publishing a message of type geometry_msgs::Twist on the robot actuation topic with a publishing queue size of 10 -> done
     motor_command_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
 
     // TODO: Define a drive /ball_chaser/command_robot service with a handle_drive_request callback function -> done
@@ -41,7 +44,7 @@ int main(int argc, char** argv)
 
     // TODO: Delete the loop, move the code to the inside of the callback function and make the necessary changes to publish the requested velocities instead of constant values -> done
 
-    // TODO: Handle ROS communication events
+    // TODO: Handle ROS communication events -> done 
     ros::spin();
 
     return 0;
