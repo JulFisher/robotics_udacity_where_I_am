@@ -23,12 +23,12 @@ void drive_robot(float lin_x, float ang_z)
 
 float check_direction(uint32_t width, uint32_t position_in_line)
 {
-    if (0 <= position_in_line < static_cast<uint32_t>(width*0.45)) {return -1.f;}
+    if (0 <= position_in_line < static_cast<uint32_t>(width*0.45)) {return 1.f;}
     else if (static_cast<uint32_t>(width*0.45) <= position_in_line <= static_cast<uint32_t>(width*0.55))
     {
         return 0.f;
     }
-    else {return 1.f;}
+    else {return -1.f;}
 }
 
 
@@ -37,9 +37,8 @@ void process_image_callback(const sensor_msgs::Image img)
 {
 
     int white_pixel = 255;
-    uint32_t postion_in_line{0};
     float linear_x{0.3};
-    float angular_z{0.3};
+    float angular_z{0.2};
     float direction_multiplicator = std::numeric_limits<float>::infinity();
 
     // TODO: Loop through each pixel in the image and check if there's a bright white one
@@ -52,14 +51,13 @@ void process_image_callback(const sensor_msgs::Image img)
     cv_bridge::CvImagePtr cv_ptr;
     cv_ptr = cv_bridge::toCvCopy(img, img.encoding);
     cv_bridge::CvImagePtr one_channel_img = cv_bridge::cvtColor(cv_ptr, "mono8");
-    for (int row = 0;  row < cv_ptr->image.rows ; ++row) {
-        uchar* pixel = cv_ptr->image.ptr(row);
-        for (int col = 0; col < cv_ptr->image.cols; ++col) {
-            if (*pixel == white_pixel) {
-                direction_multiplicator = check_direction(img.width, postion_in_line);
+    for (int row = 0;  row < one_channel_img->image.rows ; ++row) {
+        //uchar* pixel = one_channel_img->image.ptr(row);
+        for (int col = 0; col < one_channel_img->image.cols; ++col) {
+            if (one_channel_img->image[row][col] == white_pixel) {
+                direction_multiplicator = check_direction(img.width, col);
                 break;
                 }
-            *pixel++;
             }
         }
     if (std::isinf(direction_multiplicator)){
