@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   sensor_msgs
+  cv_bridge REQUIRED
+  OpenCV REQUIRED
 )
 
 ## System dependencies are found with CMake's conventions
@@ -119,8 +121,9 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -152,7 +155,12 @@ add_executable(process_image src/process_image.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(drive_bot ${catkin_LIBRARIES})
-target_link_libraries(process_image ${catkin_LIBRARIES})
+target_link_libraries(process_image ${catkin_LIBRARIES} ${OpenCV_LIBS})
+
+ament_target_dependencies(process_image
+  "rclcpp"
+  "cv_bridge"
+)
 
 #############
 ## Install ##

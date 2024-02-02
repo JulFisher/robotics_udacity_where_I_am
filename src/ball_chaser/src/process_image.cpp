@@ -3,6 +3,8 @@
 #include <sensor_msgs/Image.h>
 #include <math.h>
 #include <limits>
+#include <cv_bridge/cv_bridge.h>
+#include <opencv2/highgui.hpp>
 
 
 // Define a global client that can request services
@@ -44,23 +46,25 @@ void process_image_callback(const sensor_msgs::Image img)
     // Then, identify if this pixel falls in the left, mid, or right side of the image
     // Depending on the white ball position, call the drive_bot function and pass velocities to it
     // Request a stop when there's no white ball seen by the camera
-    
-    ROS_INFO_STREAM("Image height: " + std::to_string(image.height) + " , step size" + std::to_string(image.step) + " image width: " + std::to_string(image.width) + "image data size: " + std::to_string(sizeof(image.data)) + "\n";
 
-    //for (const std::vector<uint8_t> &line : img.data) {
-    //    for (const uint8_t &pixel : line) {
-    //        if (pixel == white_pixel) {
-    //            direction_multiplicator = check_direction(img.width, postion_in_line);
-    //            break;
-    //            }
-    //        postion_in_line++;
-    //        }
-    //    }
-    //if (std::isinf(direction_multiplicator)){
-    //    drive_robot(0.0,0.0);
-    //}
-    //else
-    //    {drive_robot(linear_x, angular_z*direction_multiplicator);}
+    //camera properties: height = 800; width = 800; encoding = R8G8B8; step = 2400
+    
+    cv_bridge::CvImagePtr cv_one_channel_ptr;
+    cv_one_channel_ptr = cv_bridge::cvtColor(img, img.header, img.encoding, 'CV_8UC1');
+    for (const auto row : cv_one_channel_ptr.row) {
+        for (const auto pixel : row) {
+            if (*pixel == white_pixel) {
+                direction_multiplicator = check_direction(img.width, postion_in_line);
+                break;
+                }
+            postion_in_line++;
+            }
+        }
+    if (std::isinf(direction_multiplicator)){
+        drive_robot(0.0,0.0);
+    }
+    else
+        {drive_robot(linear_x, angular_z*direction_multiplicator);}
 
 }
 
