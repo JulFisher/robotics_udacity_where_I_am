@@ -129,7 +129,7 @@ include_directories(
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-add_dependencies(drive_bot)
+#add_dependencies(drive_bot)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context

@@ -21,8 +21,8 @@ bool handle_drive_request(ball_chaser::DriveToTarget::Request& req,
         // Publish angles to drive the robot
         motor_command_publisher.publish(motor_command);
         // Return a response message
-        right_wheel_velo_angular = (req.lienear_x+req.angular_z*wheel_seperation/2.)/wheel_radius;
-        left_wheel_velo_angular = (req.lienear_x-req.angular_z*wheel_seperation/2.)/wheel_radius;
+        float right_wheel_velo_angular = (req.lienear_x+req.angular_z*wheel_seperation/2.)/wheel_radius;
+        float left_wheel_velo_angular = (req.lienear_x-req.angular_z*wheel_seperation/2.)/wheel_radius;
         res.msg_feedback = "Wheel velocity right: " + std::to_string(right_wheel_velo_angular) + " , rad/s and left: " + std::to_string(left_wheel_velo_angular) + " rad/s.\n";
         ROS_INFO_STREAM(res.msg_feedback);
         return true;
