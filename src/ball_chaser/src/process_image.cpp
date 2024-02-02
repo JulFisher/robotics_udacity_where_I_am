@@ -23,12 +23,12 @@ void drive_robot(float lin_x, float ang_z)
 
 float check_direction(uint32_t width, uint32_t position_in_line)
 {
-    if (0 <= position_in_line < static_cast<uint32_t>(width*0.45)) {return 1.f;}
+    if (0 <= position_in_line < static_cast<uint32_t>(width*0.45)) {return -1.f;}
     else if (static_cast<uint32_t>(width*0.45) <= position_in_line <= static_cast<uint32_t>(width*0.55))
     {
         return 0.f;
     }
-    else {return -1.f;}
+    else {return 1.f;}
 }
 
 
@@ -49,15 +49,17 @@ void process_image_callback(const sensor_msgs::Image img)
 
     //camera properties: height = 800; width = 800; encoding = R8G8B8; step = 2400
     
-    cv_bridge::CvImagePtr cv_one_channel_ptr;
-    cv_one_channel_ptr = cv_bridge::cvtColor(img, img.header, img.encoding, 'CV_8UC1');
-    for (const auto row : cv_one_channel_ptr.row) {
-        for (const auto pixel : row) {
+    cv_bridge::CvImagePtr cv_ptr;
+    cv_ptr = cv_bridge::toCvCopy(img, img.encoding);
+    cv_bridge::CvImagePtr one_channel_img = cv_bridge::cvtColor(cv_ptr, "mono8");
+    for (int row = 0;  row < cv_ptr->image.rows ; ++row) {
+        uchar* pixel = cv_ptr->image.ptr(row);
+        for (int col = 0; col < cv_ptr->image.cols; ++col) {
             if (*pixel == white_pixel) {
                 direction_multiplicator = check_direction(img.width, postion_in_line);
                 break;
                 }
-            postion_in_line++;
+            *pixel++;
             }
         }
     if (std::isinf(direction_multiplicator)){

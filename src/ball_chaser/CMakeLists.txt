@@ -4,6 +4,8 @@ project(ball_chaser)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
+set(OpenCV_DIR /usr/lib/x86_64-linux-gnu/cmake/opencv4)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -157,10 +159,6 @@ add_executable(process_image src/process_image.cpp)
 target_link_libraries(drive_bot ${catkin_LIBRARIES})
 target_link_libraries(process_image ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
-ament_target_dependencies(process_image
-  "rclcpp"
-  "cv_bridge"
-)
 
 #############
 ## Install ##
