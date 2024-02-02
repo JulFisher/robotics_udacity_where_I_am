@@ -4,6 +4,7 @@
 #include <cmath.h>
 #include <limits>
 
+
 // Define a global client that can request services
 ros::ServiceClient client;
 
@@ -44,20 +45,22 @@ void process_image_callback(const sensor_msgs::Image img)
     // Depending on the white ball position, call the drive_bot function and pass velocities to it
     // Request a stop when there's no white ball seen by the camera
     
-    for (const uint8_t &line : img.data[:]) {
-        for (const uint8_t &pixel : line) {
-            if (pixel == white_pixel) {
-                direction_multiplicator = check_direction(img.width, postion_in_line);
-                break;
-                }
-            postion_in_line++;
-            }
-        }
-    if (std::isinf(direction_multiplicator)){
-        drive_robot(0.0,0.0);
-    }
-    else
-        {linear_x, angular_z*direction_multiplicator}
+    ROS_INFO_STREAM("Image height: " + std::to_string(image.height) + " , step size" + std::to_string(image.step) + " image width: " + std::to_string(image.width) + "image data size: " + std::to_string(sizeof(image.data)) + "\n";
+
+    //for (const uint8_t &line : img.data[:]) {
+    //    for (const uint8_t &pixel : line) {
+    //        if (pixel == white_pixel) {
+    //            direction_multiplicator = check_direction(img.width, postion_in_line);
+    //            break;
+    //            }
+    //        postion_in_line++;
+    //        }
+    //    }
+    //if (std::isinf(direction_multiplicator)){
+    //    drive_robot(0.0,0.0);
+    //}
+    //else
+    //    {linear_x, angular_z*direction_multiplicator}
 
 }
 
