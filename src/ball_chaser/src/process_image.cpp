@@ -23,6 +23,7 @@ void drive_robot(float lin_x, float ang_z)
 
 float check_direction(uint32_t width, uint32_t position_in_line)
 {
+    //ROS_INFO_STREAM("Width: "+std::to_string(static_cast<uint32_t>(width*0.45))+" postion in line:" + std::to_string(position_in_line) +"\n");
     if (0 <= position_in_line < static_cast<uint32_t>(width*0.45)) {return 1.f;}
     else if (static_cast<uint32_t>(width*0.45) <= position_in_line <= static_cast<uint32_t>(width*0.55))
     {
@@ -40,6 +41,7 @@ void process_image_callback(const sensor_msgs::Image img)
     float linear_x{0.3};
     float angular_z{0.2};
     float direction_multiplicator = std::numeric_limits<float>::infinity();
+    bool break_outer_loop{false};
 
     // TODO: Loop through each pixel in the image and check if there's a bright white one
     // Then, identify if this pixel falls in the left, mid, or right side of the image
@@ -52,19 +54,21 @@ void process_image_callback(const sensor_msgs::Image img)
     cv_ptr = cv_bridge::toCvCopy(img, img.encoding);
     cv_bridge::CvImagePtr one_channel_img = cv_bridge::cvtColor(cv_ptr, "mono8");
     for (int row = 0;  row < one_channel_img->image.rows ; ++row) {
-        //uchar* pixel = one_channel_img->image.ptr(row);
+        const uchar* pixel = one_channel_img->image.ptr(row);
         for (int col = 0; col < one_channel_img->image.cols; ++col) {
-            if (one_channel_img->image[row][col] == white_pixel) {
+            if (pixel[col] == white_pixel) {
                 direction_multiplicator = check_direction(img.width, col);
+                //ROS_INFO_STREAM("Direction: "+std::to_string(direction_multiplicator)+"\n");
+                if (std::isinf(direction_multiplicator)){
+                    drive_robot(0.0,0.0);
+                }
+                else {drive_robot(linear_x, angular_z*direction_multiplicator);}
                 break;
                 }
             }
+            if (break_outer_loop) {break;}
         }
-    if (std::isinf(direction_multiplicator)){
-        drive_robot(0.0,0.0);
-    }
-    else
-        {drive_robot(linear_x, angular_z*direction_multiplicator);}
+
 
 }
 
