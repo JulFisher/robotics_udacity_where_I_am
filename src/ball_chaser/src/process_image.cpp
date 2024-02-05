@@ -23,13 +23,15 @@ void drive_robot(float lin_x, float ang_z)
 
 float check_direction(uint32_t width, uint32_t position_in_line)
 {
-    //ROS_INFO_STREAM("Width: "+std::to_string(static_cast<uint32_t>(width*0.45))+" postion in line:" + std::to_string(position_in_line) +"\n");
-    if (0 <= position_in_line < static_cast<uint32_t>(width*0.45)) {return 1.f;}
-    else if (static_cast<uint32_t>(width*0.45) <= position_in_line <= static_cast<uint32_t>(width*0.55))
+    float multiplicator{0.};
+    if (position_in_line < static_cast<uint32_t>(width*0.45)) {multiplicator = 1.f;}
+    else if (position_in_line <= static_cast<uint32_t>(width*0.55))
     {
-        return 0.f;
+        multiplicator = 0.f;
     }
-    else {return -1.f;}
+    else {multiplicator = -1.f;}
+    //ROS_INFO_STREAM("Width: "+std::to_string(width)+" postion in line:" + std::to_string(position_in_line) + " Multiplikator: " + std::to_string(multiplicator) + "\n");
+    return multiplicator;
 }
 
 
@@ -63,6 +65,7 @@ void process_image_callback(const sensor_msgs::Image img)
                     drive_robot(0.0,0.0);
                 }
                 else {drive_robot(linear_x, angular_z*direction_multiplicator);}
+                break_outer_loop = true;
                 break;
                 }
             }
