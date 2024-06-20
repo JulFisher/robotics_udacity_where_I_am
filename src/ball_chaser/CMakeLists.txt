@@ -112,8 +112,10 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ball_chaser
-#  CATKIN_DEPENDS message_generation roscpp std_msgs
+  CATKIN_DEPENDS message_generation roscpp std_msgs message_runtime
 #  DEPENDS system_lib
+#  message_runtime
+#  std_msgs
 )
 
 ###########
@@ -136,7 +138,7 @@ include_directories(
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-#add_dependencies(drive_bot)
+#add_dependencies(drive_bot ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -144,7 +146,8 @@ include_directories(
 add_executable(drive_bot src/drive_bot.cpp)
 add_executable(process_image src/process_image.cpp)
 
-
+add_dependencies(drive_bot ${ball_chaser_EXPORTED_TARGETS})
+add_dependencies(process_image ${ball_chaser_EXPORTED_TARGETS})
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
